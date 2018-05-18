@@ -20,9 +20,14 @@ ASProjectile::ASProjectile()
 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
 	ProjectileMovement->UpdatedComponent = SphereComp;
-	ProjectileMovement->InitialSpeed = 1000.0f;
 	ProjectileMovement->bRotationFollowsVelocity = true;
 	ProjectileMovement->bShouldBounce = true;
+
+	LaunchSpeed = 2000.0f;
+	FuzeTime = 1.0f;
+	DamageRadius = 75.0f;
+
+	ProjectileMovement->InitialSpeed = LaunchSpeed;
 }
 
 // Called when the game starts or when spawned

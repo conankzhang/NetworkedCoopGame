@@ -6,6 +6,7 @@
 #include "TimerManager.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
+#include "DrawDebugHelpers.h"
 
 // Sets default values
 ASProjectile::ASProjectile()
@@ -39,7 +40,8 @@ void ASProjectile::OnExplode()
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, GetActorLocation());
 	}
 
-	UGameplayStatics::ApplyRadialDamage(GetWorld(), 20.0f, GetActorLocation(), 20.0f, DamageType, TArray<AActor*>());
+	UGameplayStatics::ApplyRadialDamage(GetWorld(), 20.0f, GetActorLocation(), DamageRadius, DamageType, TArray<AActor*>(), this);
+	DrawDebugSphere(GetWorld(), GetActorLocation(), DamageRadius, 20, FColor::Red, false, 1.0f);
 	Destroy();
 }
 

@@ -19,7 +19,7 @@ ASProjectile::ASProjectile()
 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
 	ProjectileMovement->UpdatedComponent = SphereComp;
-	ProjectileMovement->InitialSpeed = 1500.0f;
+	ProjectileMovement->InitialSpeed = 1000.0f;
 	ProjectileMovement->bRotationFollowsVelocity = true;
 	ProjectileMovement->bShouldBounce = true;
 }
@@ -30,7 +30,6 @@ void ASProjectile::BeginPlay()
 	Super::BeginPlay();
 	
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &ASProjectile::OnExplode, FuzeTime, false);
-	SetLifeSpan(FuzeTime);
 }
 
 void ASProjectile::OnExplode()
@@ -40,7 +39,8 @@ void ASProjectile::OnExplode()
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, GetActorLocation());
 	}
 
-	UGameplayStatics::ApplyRadialDamage(GetWorld(), 20.0f, GetActorLocation(), 5.0f, DamageType, TArray<AActor*>());
+	UGameplayStatics::ApplyRadialDamage(GetWorld(), 20.0f, GetActorLocation(), 20.0f, DamageType, TArray<AActor*>());
+	Destroy();
 }
 
 // Called every frame

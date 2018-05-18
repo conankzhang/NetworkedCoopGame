@@ -8,14 +8,14 @@
 
 void ASLauncher::Fire()
 {
-	FVector MuzzleLocation = MeshComp->GetSocketLocation(MuzzleSocketName);
-	FRotator MuzzleRotation = MeshComp->GetSocketRotation(MuzzleSocketName);
-
-	MuzzleRotation.Pitch = UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetControlRotation().Pitch;
-	FActorSpawnParameters SpawnInfo;
-	
-	if(Projectile)
+	if(GetOwner() && Projectile)
 	{
+		FVector MuzzleLocation = MeshComp->GetSocketLocation(MuzzleSocketName);
+		FRotator MuzzleRotation = MeshComp->GetSocketRotation(MuzzleSocketName);
+
+		MuzzleRotation.Pitch = UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetControlRotation().Pitch;
+		FActorSpawnParameters SpawnInfo;
+		
 		ASProjectile* Munition = GetWorld()->SpawnActor<ASProjectile>(Projectile, MuzzleLocation, MuzzleRotation, SpawnInfo);
 	}
 }

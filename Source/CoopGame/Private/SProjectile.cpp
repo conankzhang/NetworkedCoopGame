@@ -46,7 +46,9 @@ void ASProjectile::OnExplode()
 	}
 
 	UGameplayStatics::ApplyRadialDamage(GetWorld(), 20.0f, GetActorLocation(), DamageRadius, DamageType, TArray<AActor*>(), this);
+
 	DrawDebugSphere(GetWorld(), GetActorLocation(), DamageRadius, 20, FColor::Red, false, 1.0f);
+
 	Destroy();
 }
 

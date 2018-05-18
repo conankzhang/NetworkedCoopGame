@@ -10,5 +10,9 @@ void ASLauncher::Fire()
 	FVector MuzzleLocation = MeshComp->GetSocketLocation(MuzzleSocketName);
 	FRotator MuzzleRotation = MeshComp->GetSocketRotation(MuzzleSocketName);
 	FActorSpawnParameters SpawnInfo;
-	GetWorld()->SpawnActor<ASProjectile>(Projectile, MuzzleLocation, MuzzleRotation, SpawnInfo);
+	
+	if(Projectile)
+	{
+		ASProjectile* Munition = GetWorld()->SpawnActor<ASProjectile>(Projectile, MuzzleLocation, MuzzleRotation, SpawnInfo);
+	}
 }

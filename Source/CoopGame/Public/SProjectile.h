@@ -6,8 +6,10 @@
 #include "GameFramework/Actor.h"
 #include "SProjectile.generated.h"
 
-class UStaticMeshComponent;
+class USphereComponent;
 class UParticleSystem;
+class UProjectileMovementComponent;
+class UDamageType;
 
 UCLASS()
 class COOPGAME_API ASProjectile : public AActor
@@ -23,7 +25,10 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	UStaticMeshComponent* MeshComp;
+	USphereComponent* SphereComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UProjectileMovementComponent* ProjectileMovement;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile")
 	UParticleSystem* ExplosionEffect;
@@ -32,6 +37,9 @@ protected:
 	float FuzeTime;
 
 	FTimerHandle TimerHandle;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+	TSubclassOf<UDamageType> DamageType;
 
 	UFUNCTION()
 	void OnExplode();

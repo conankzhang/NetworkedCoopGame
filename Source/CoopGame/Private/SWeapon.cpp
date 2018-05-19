@@ -10,6 +10,7 @@
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "CoopGame.h"
 #include "TimerManager.h"
+#include "GameFramework/Character.h"
 
 static int32 DebugWeaponDrawing = 0;
 FAutoConsoleVariableRef CVARDebugWeaponDrawing(
@@ -29,7 +30,8 @@ ASWeapon::ASWeapon()
 	BaseDamage = 20.0f;
 	RateOfFire = 600.0f;
 	LastFireTime = -TimeBetweenShots;
-	Spread = 1.0f;
+	Spread = 0.15f;
+	Recoil = 0.15f;
 }
 
 void ASWeapon::BeginPlay()
@@ -110,6 +112,12 @@ void ASWeapon::Fire()
 		}
 
 		PlayFireEffects(TracerEndPoint);
+
+		float YRecoil = FMath::FRandRange(-Recoil, Recoil);
+		float ZRecoil = FMath::FRandRange(-Recoil, Recoil);
+
+		UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->AddControllerPitchInput(YRecoil);
+		UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->AddControllerYawInput(ZRecoil);
 
 		LastFireTime = GetWorld()->TimeSeconds;
 	}

@@ -66,6 +66,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	float RateOfFire;
 
+	//Bullets per minute
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	float Spread;
+
 	// Derived from rate of fire
 	float TimeBetweenShots;
 public:	

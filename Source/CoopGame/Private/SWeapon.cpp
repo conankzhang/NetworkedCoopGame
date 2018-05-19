@@ -29,6 +29,7 @@ ASWeapon::ASWeapon()
 	BaseDamage = 20.0f;
 	RateOfFire = 600.0f;
 	LastFireTime = -TimeBetweenShots;
+	Spread = 1.0f;
 }
 
 void ASWeapon::BeginPlay()
@@ -50,7 +51,12 @@ void ASWeapon::Fire()
 		MyOwner->GetActorEyesViewPoint(EyeLocation, EyeRotation);
 
 		FVector ShotDirection = EyeRotation.Vector();
-		FVector TraceEnd = EyeLocation + (ShotDirection * 10000);
+
+		float YSpread = FMath::FRandRange(-Spread, Spread);
+		float ZSpread = FMath::FRandRange(-Spread, Spread);
+
+		FVector SpreadDirection = FVector(ShotDirection.X, ShotDirection.Y + YSpread, ShotDirection.Z + ZSpread);
+		FVector TraceEnd = EyeLocation + (SpreadDirection* 10000);
 
 		FCollisionQueryParams QueryParams;
 

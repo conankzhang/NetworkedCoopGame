@@ -23,5 +23,6 @@ void ASLauncher::Fire()
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 		GetWorld()->SpawnActor<ASProjectile>(Projectile, MuzzleLocation, EyeRotation, SpawnParams);
+		LastFireTime = GetWorld()->TimeSeconds;
 	}
 }

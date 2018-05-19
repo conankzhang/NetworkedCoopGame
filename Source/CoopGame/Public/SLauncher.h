@@ -20,8 +20,6 @@ class COOPGAME_API ASLauncher : public ASWeapon
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Launcher")
 	TSubclassOf<ASProjectile> Projectile;
-
-public:
-	UFUNCTION(BlueprintCallable, Category = "Launcher")
 	virtual void Fire() override;
+public:
 };

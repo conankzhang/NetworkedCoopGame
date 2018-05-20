@@ -9,6 +9,8 @@
 class USHealthComponent;
 class UStaticMeshComponent;
 class UParticleSystem;
+class URadialForceComponent;
+class UMaterial;
 	
 UCLASS()
 class COOPGAME_API ASExplosiveBarrel : public AActor
@@ -29,8 +31,18 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USHealthComponent* HealthComp;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	URadialForceComponent* RadialForceComp;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ExplodeBarrel")
 	UParticleSystem* ExplodeEffect;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ExplodeBarrel")
+	FVector BarrelLaunchImpulse;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ExplodeBarrel")
+	UMaterial* ExplodeMaterial;
+
 
 	UFUNCTION()
 	void OnHealthChanged(USHealthComponent* OwningHealthComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser );

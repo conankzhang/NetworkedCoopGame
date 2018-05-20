@@ -3,15 +3,22 @@
 #include "SExplosiveBarrel.h"
 #include "Kismet/GameplayStatics.h"
 #include "SHealthComponent.h"
+#include "PhysicsEngine/RadialForceComponent.h"
 
 
 // Sets default values
 ASExplosiveBarrel::ASExplosiveBarrel()
 {
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
+	MeshComp->SetSimulatePhysics(true);
 	RootComponent = MeshComp;
 
 	HealthComp = CreateDefaultSubobject<USHealthComponent>(TEXT("HealthComp"));
+
+	RadialForceComp = CreateDefaultSubobject<URadialForceComponent>(TEXT("RadialForceComp"));
+	RadialForceComp->SetupAttachment(RootComponent);
+
+	BarrelLaunchImpulse = FVector(0.0f, 100.0f, 0.0f);
 }
 
 // Called when the game starts or when spawned
@@ -37,4 +44,12 @@ void ASExplosiveBarrel::Explode()
 	{
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplodeEffect, GetActorLocation());
 	}
+
+	if(ExplodeMaterial)
+	{
+		MeshComp->SetMaterial(0, ExplodeMaterial);
+	}
+
+	MeshComp->AddImpulse(BarrelLaunchImpulse);
+	RadialForceComp->FireImpulse();
 }

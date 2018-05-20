@@ -11,11 +11,15 @@ ASExplosiveBarrel::ASExplosiveBarrel()
 {
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	MeshComp->SetSimulatePhysics(true);
+	MeshComp->SetCollisionObjectType(ECC_PhysicsBody);
 	RootComponent = MeshComp;
 
 	HealthComp = CreateDefaultSubobject<USHealthComponent>(TEXT("HealthComp"));
 
 	RadialForceComp = CreateDefaultSubobject<URadialForceComponent>(TEXT("RadialForceComp"));
+	RadialForceComp->bAutoActivate = false;
+	RadialForceComp->bImpulseVelChange = true;
+	RadialForceComp->bIgnoreOwningActor = true;
 	RadialForceComp->SetupAttachment(RootComponent);
 
 	BarrelLaunchImpulse = FVector(0.0f, 100.0f, 0.0f);

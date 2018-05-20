@@ -32,6 +32,8 @@ ASWeapon::ASWeapon()
 	LastFireTime = -TimeBetweenShots;
 	Spread = 0.15f;
 	Recoil = 0.15f;
+
+	SetReplicates(true);
 }
 
 void ASWeapon::BeginPlay()

@@ -11,6 +11,7 @@
 #include "CoopGame.h"
 #include "TimerManager.h"
 #include "GameFramework/Character.h"
+#include "UnrealNetwork.h"
 
 static int32 DebugWeaponDrawing = 0;
 FAutoConsoleVariableRef CVARDebugWeaponDrawing(
@@ -34,6 +35,9 @@ ASWeapon::ASWeapon()
 	Recoil = 0.15f;
 
 	SetReplicates(true);
+
+	NetUpdateFrequency = 66.0f;
+	MinNetUpdateFrequency = 33.0f;
 }
 
 void ASWeapon::BeginPlay()
@@ -75,13 +79,13 @@ void ASWeapon::Fire()
 
 		// Particle "Target" parameter 
 		FVector TracerEndPoint = TraceEnd;
-
+		EPhysicalSurface SurfaceType = SurfaceType_Default;
 		FHitResult Hit;
 		if (GetWorld()->LineTraceSingleByChannel(Hit, EyeLocation, TraceEnd, COLLISION_WEAPON, QueryParams))
 		{
 			AActor* HitActor = Hit.GetActor();
 
-			EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
+			SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
 
 			float ActualDamage = BaseDamage;
 			if(SurfaceType == SURFACE_FLESHVULNERABLE)
@@ -91,25 +95,11 @@ void ASWeapon::Fire()
 
 			UGameplayStatics::ApplyPointDamage(HitActor, ActualDamage, ShotDirection, Hit, MyOwner->GetInstigatorController(), this, DamageType);
 
-			UParticleSystem* SelectedEffect = nullptr;	
-
-			switch(SurfaceType)
-			{
-			case SURFACE_FLESHDEFAULT:
-			case SURFACE_FLESHVULNERABLE:
-				SelectedEffect = FleshImpactEffect;
-				break;
-			default:
-				SelectedEffect = DefaultImpactEffect;
-				break;
-			}
-
-			if (SelectedEffect)
-			{
-				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SelectedEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
-			}
+			PlayImpactEffects(SurfaceType, Hit.ImpactPoint);
 
 			TracerEndPoint = Hit.ImpactPoint;
+
+			HitScanTrace.SurfaceType = SurfaceType;
 		}
 
 		if(DebugWeaponDrawing > 0 )
@@ -119,6 +109,12 @@ void ASWeapon::Fire()
 
 		PlayFireEffects(TracerEndPoint);
 
+		if(Role == ROLE_Authority)
+		{
+			HitScanTrace.TraceTo = TracerEndPoint;
+			HitScanTrace.SurfaceType = SurfaceType;
+		}
+
 		float YRecoil = FMath::FRandRange(-Recoil, Recoil);
 		float ZRecoil = FMath::FRandRange(-Recoil, Recoil);
 
@@ -127,6 +123,14 @@ void ASWeapon::Fire()
 
 		LastFireTime = GetWorld()->TimeSeconds;
 	}
+}
+
+void ASWeapon::OnRep_HitScanTrace()
+{
+	// Play cosmetic effects
+	PlayFireEffects(HitScanTrace.TraceTo);
+
+	PlayImpactEffects(HitScanTrace.SurfaceType, HitScanTrace.TraceTo);
 }
 
 void ASWeapon::ServerFire_Implementation()
@@ -142,7 +146,15 @@ bool ASWeapon::ServerFire_Validate()
 void ASWeapon::StartFire()
 {
 	float FirstDelay = FMath::Max(LastFireTime + TimeBetweenShots - GetWorld()->TimeSeconds, 0.0f);
-	GetWorldTimerManager().SetTimer(TimerHandle_TimeBetweenShots, this, &ASWeapon::Fire, TimeBetweenShots, true, FirstDelay);
+	if(FirstDelay == 0.0f)
+	{
+		Fire();
+		GetWorldTimerManager().SetTimer(TimerHandle_TimeBetweenShots, this, &ASWeapon::Fire, TimeBetweenShots, true, TimeBetweenShots);
+	}
+	else
+	{
+		GetWorldTimerManager().SetTimer(TimerHandle_TimeBetweenShots, this, &ASWeapon::Fire, TimeBetweenShots, true, FirstDelay);
+	}
 }
 
 void ASWeapon::StopFire()
@@ -177,4 +189,35 @@ void ASWeapon::PlayFireEffects(FVector TracerEndPoint)
 			PC->ClientPlayCameraShake(FireCamShake);
 		}
 	}
+}
+
+void ASWeapon::PlayImpactEffects(EPhysicalSurface SurfaceType, FVector ImpactPoint)
+{
+	UParticleSystem* SelectedEffect = nullptr;	
+
+	switch(SurfaceType)
+	{
+	case SURFACE_FLESHDEFAULT:
+	case SURFACE_FLESHVULNERABLE:
+		SelectedEffect = FleshImpactEffect;
+		break;
+	default:
+		SelectedEffect = DefaultImpactEffect;
+		break;
+	}
+
+	if (SelectedEffect)
+	{
+		FVector MuzzleLocation = MeshComp->GetSocketLocation(MuzzleSocketName);
+		FVector ShotDirection = ImpactPoint - MuzzleLocation;
+		ShotDirection.Normalize();
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SelectedEffect, ImpactPoint, ShotDirection.Rotation());
+	}
+}
+
+void ASWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION(ASWeapon, HitScanTrace, COND_SkipOwner);
 }

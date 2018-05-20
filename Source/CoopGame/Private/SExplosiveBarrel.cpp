@@ -4,6 +4,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "SHealthComponent.h"
 #include "PhysicsEngine/RadialForceComponent.h"
+#include "UnrealNetwork.h"
 
 
 // Sets default values
@@ -23,6 +24,8 @@ ASExplosiveBarrel::ASExplosiveBarrel()
 	RadialForceComp->SetupAttachment(RootComponent);
 
 	BarrelLaunchImpulse = FVector(0.0f, 100.0f, 0.0f);
+
+	SetReplicates(true);
 }
 
 // Called when the game starts or when spawned
@@ -56,4 +59,11 @@ void ASExplosiveBarrel::Explode()
 
 	MeshComp->AddImpulse(BarrelLaunchImpulse);
 	RadialForceComp->FireImpulse();
+}
+
+void ASExplosiveBarrel::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ASExplosiveBarrel, bExploded);
 }

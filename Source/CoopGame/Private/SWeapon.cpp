@@ -118,8 +118,8 @@ void ASWeapon::Fire()
 		float YRecoil = FMath::FRandRange(-Recoil, Recoil);
 		float ZRecoil = FMath::FRandRange(-Recoil, Recoil);
 
-		UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->AddControllerPitchInput(YRecoil);
-		UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->AddControllerYawInput(ZRecoil);
+		Cast<ACharacter>(MyOwner)->AddControllerPitchInput(YRecoil);
+		Cast<ACharacter>(MyOwner)->AddControllerYawInput(ZRecoil);
 
 		LastFireTime = GetWorld()->TimeSeconds;
 	}

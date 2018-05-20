@@ -42,7 +42,10 @@ void ASExplosiveBarrel::OnHealthChanged(USHealthComponent* OwningHealthComp, flo
 	if(Health <= 0.0f && !bExploded)
 	{
 		bExploded = true;
-		Explode();
+		OnRep_Exploded();
+
+		MeshComp->AddImpulse(BarrelLaunchImpulse);
+		RadialForceComp->FireImpulse();
 	}
 }
 
@@ -62,9 +65,6 @@ void ASExplosiveBarrel::Explode()
 	{
 		MeshComp->SetMaterial(0, ExplodeMaterial);
 	}
-
-	MeshComp->AddImpulse(BarrelLaunchImpulse);
-	RadialForceComp->FireImpulse();
 }
 
 void ASExplosiveBarrel::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

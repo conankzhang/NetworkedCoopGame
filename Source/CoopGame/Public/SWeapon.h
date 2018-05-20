@@ -60,6 +60,9 @@ protected:
 
 	virtual void Fire();
 
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerFire();
+
 	float LastFireTime;
 
 	//Bullets per minute

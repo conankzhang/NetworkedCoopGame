@@ -26,6 +26,7 @@ ASExplosiveBarrel::ASExplosiveBarrel()
 	BarrelLaunchImpulse = FVector(0.0f, 100.0f, 0.0f);
 
 	SetReplicates(true);
+	SetReplicateMovement(true);
 }
 
 // Called when the game starts or when spawned
@@ -43,6 +44,11 @@ void ASExplosiveBarrel::OnHealthChanged(USHealthComponent* OwningHealthComp, flo
 		bExploded = true;
 		Explode();
 	}
+}
+
+void ASExplosiveBarrel::OnRep_Exploded()
+{
+	Explode();
 }
 
 void ASExplosiveBarrel::Explode()

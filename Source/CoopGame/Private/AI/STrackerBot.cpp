@@ -7,7 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
 #include "DrawDebugHelpers.h"
-
+#include "SHealthComponent.h"
 
 // Sets default values
 ASTrackerBot::ASTrackerBot()
@@ -20,6 +20,9 @@ ASTrackerBot::ASTrackerBot()
 	MeshComp->SetSimulatePhysics(true);
 	RootComponent = MeshComp;
 
+	HealthComp = CreateDefaultSubobject<USHealthComponent>(TEXT("HealthComp"));
+	HealthComp->OnHealthChanged.AddDynamic(this, &ASTrackerBot::HandleTakeDamage);
+
 	bUseVelocityChange = false;
 	MovementForce = 1000;
 	RequiredDistanceToTarget = 100;
@@ -31,6 +34,11 @@ void ASTrackerBot::BeginPlay()
 	Super::BeginPlay();
 
 	NextPathPoint = GetNextPathPoint();
+}
+
+void ASTrackerBot::HandleTakeDamage(USHealthComponent* OwningHealthComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
+{
+	UE_LOG(LogTemp, Log, TEXT("Health %s of %s"), *FString::SanitizeFloat(Health), *GetName());
 }
 
 FVector ASTrackerBot::GetNextPathPoint()

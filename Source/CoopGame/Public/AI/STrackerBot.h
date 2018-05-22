@@ -8,6 +8,7 @@
 
 class UStaticMeshComponent;
 class USHealthComponent;
+class USphereComponent;
 
 UCLASS()
 class COOPGAME_API ASTrackerBot : public APawn
@@ -27,6 +28,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USHealthComponent* HealthComp;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	USphereComponent* SphereComp;
 
 
 	UFUNCTION()
@@ -59,7 +63,14 @@ protected:
 	float ExplosionDamage;
 
 	bool bExploded;
+
+	bool bStartedSelfDestruction;
+
+	FTimerHandle TimerHandle_SelfDamage;
+	void DamageSelf();
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 };

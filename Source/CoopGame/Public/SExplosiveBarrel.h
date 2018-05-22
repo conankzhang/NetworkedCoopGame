@@ -38,7 +38,7 @@ protected:
 	UParticleSystem* ExplodeEffect;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ExplodeBarrel")
-	FVector BarrelLaunchImpulse;
+	float BarrelLaunchImpulse;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ExplodeBarrel")
 	UMaterial* ExplodeMaterial;

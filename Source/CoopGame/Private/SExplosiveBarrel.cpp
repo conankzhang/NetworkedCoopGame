@@ -23,8 +23,6 @@ ASExplosiveBarrel::ASExplosiveBarrel()
 	RadialForceComp->bIgnoreOwningActor = true;
 	RadialForceComp->SetupAttachment(RootComponent);
 
-	BarrelLaunchImpulse = FVector(0.0f, 100.0f, 0.0f);
-
 	SetReplicates(true);
 	SetReplicateMovement(true);
 }
@@ -44,7 +42,8 @@ void ASExplosiveBarrel::OnHealthChanged(USHealthComponent* OwningHealthComp, flo
 		bExploded = true;
 		OnRep_Exploded();
 
-		MeshComp->AddImpulse(BarrelLaunchImpulse);
+		FVector BoostIntensity = FVector::UpVector * BarrelLaunchImpulse;
+		MeshComp->AddImpulse(BoostIntensity);
 		RadialForceComp->FireImpulse();
 	}
 }

@@ -33,7 +33,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USphereComponent* SphereComp;
 
-
 	UFUNCTION()
 	void HandleTakeDamage(USHealthComponent* OwningHealthComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser );
 
@@ -50,6 +49,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
 	float RequiredDistanceToTarget;
 
+	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
+	float BuffCheckRadius;
+
 	UMaterialInstanceDynamic* MatInst;
 
 	void SelfDestruct();
@@ -64,11 +66,25 @@ protected:
 	float ExplosionDamage;
 
 	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
+	float DamageBoost;
+
+	int PowerLevel;
+
+	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
+	int MaxPowerLevel;
+
+	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
 	float SelfDamageInterval;
+
+	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
+	float BuffCheckInterval;
 
 	bool bExploded;
 
 	bool bStartedSelfDestruction;
+
+	FTimerHandle TimerHandle_BuffCheck;
+	void BuffCheck();
 
 	FTimerHandle TimerHandle_SelfDamage;
 	void DamageSelf();

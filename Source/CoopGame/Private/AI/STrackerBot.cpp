@@ -41,6 +41,12 @@ ASTrackerBot::ASTrackerBot()
 	ExplosionRadius = 200;
 
 	SelfDamageInterval = 0.25f;
+
+	BuffCheckInterval = 1.0f;
+	BuffCheckRadius = 400;
+
+	MaxPowerLevel = 5;
+	DamageBoost = 10;
 }
 
 // Called when the game starts or when spawned
@@ -51,6 +57,7 @@ void ASTrackerBot::BeginPlay()
 	if (Role == ROLE_Authority)
 	{
 		NextPathPoint = GetNextPathPoint();
+		GetWorldTimerManager().SetTimer(TimerHandle_BuffCheck, this, &ASTrackerBot::BuffCheck, BuffCheckInterval, true, 0.0f);
 	}
 }
 
@@ -109,11 +116,36 @@ void ASTrackerBot::SelfDestruct()
 		TArray<AActor*> IgnoredActors;
 		IgnoredActors.Add(this);
 
-		UGameplayStatics::ApplyRadialDamage(this, ExplosionDamage, GetActorLocation(), ExplosionRadius, nullptr, IgnoredActors, this, GetInstigatorController(), true);
+		UGameplayStatics::ApplyRadialDamage(this, ExplosionDamage + (static_cast<float>(PowerLevel) * DamageBoost), GetActorLocation(), ExplosionRadius, nullptr, IgnoredActors, this, GetInstigatorController(), true);
 
 		DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 12, FColor::Red, false, 2.0f, 0, 1.0f);
 
 		SetLifeSpan(2.0f);
+	}
+}
+
+void ASTrackerBot::BuffCheck()
+{
+	TArray<AActor*> IgnoreActors;
+	TArray<AActor*> OutActors;
+
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+
+	DrawDebugSphere(GetWorld(), GetActorLocation(), BuffCheckRadius, 20, FColor::Blue, false, 1.0f, 0, 1.0f);
+
+	UKismetSystemLibrary::SphereOverlapActors(GetWorld(), GetActorLocation(), BuffCheckRadius, ObjectTypes, GetClass(), IgnoreActors, OutActors);
+
+	PowerLevel = OutActors.Num();
+	
+	if (MatInst == nullptr)
+	{
+		MatInst = MeshComp->CreateDynamicMaterialInstance(0, MeshComp->GetMaterial(0));
+	}
+
+	if (MatInst)
+	{
+		float Alpha = PowerLevel / static_cast<float>(MaxPowerLevel);
+		MatInst->SetScalarParameterValue("PowerLevelAlpha", Alpha);
 	}
 }
 

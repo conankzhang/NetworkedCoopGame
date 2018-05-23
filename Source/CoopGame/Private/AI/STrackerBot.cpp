@@ -87,7 +87,7 @@ FVector ASTrackerBot::GetNextPathPoint()
 	ACharacter* PlayerPawn = UGameplayStatics::GetPlayerCharacter(this, 0);
 	UNavigationPath* NavPath = UNavigationSystem::FindPathToActorSynchronously(this, GetActorLocation(), PlayerPawn);
 
-	if (NavPath->PathPoints.Num() > 1)
+	if (NavPath && NavPath->PathPoints.Num() > 1)
 	{
 		return NavPath->PathPoints[1];
 	}
@@ -127,16 +127,17 @@ void ASTrackerBot::SelfDestruct()
 void ASTrackerBot::BuffCheck()
 {
 	TArray<AActor*> IgnoreActors;
+	IgnoreActors.Add(this);
 	TArray<AActor*> OutActors;
-
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
 
 	DrawDebugSphere(GetWorld(), GetActorLocation(), BuffCheckRadius, 20, FColor::Blue, false, 1.0f, 0, 1.0f);
 
 	UKismetSystemLibrary::SphereOverlapActors(GetWorld(), GetActorLocation(), BuffCheckRadius, ObjectTypes, GetClass(), IgnoreActors, OutActors);
 
-	PowerLevel = OutActors.Num();
+	PowerLevel = FMath::Clamp(OutActors.Num(), 0, MaxPowerLevel);
 	
+	UE_LOG(LogTemp, Log, TEXT("Name: %s, PowerLevel: %s"), *GetName(), *FString::FromInt(PowerLevel));
 	if (MatInst == nullptr)
 	{
 		MatInst = MeshComp->CreateDynamicMaterialInstance(0, MeshComp->GetMaterial(0));

@@ -5,6 +5,7 @@
 #include "Components/DecalComponent.h"
 #include "SPowerupActor.h"
 #include "TimerManager.h"
+#include "SCharacter.h"
 
 
 // Sets default values
@@ -49,13 +50,18 @@ void ASPickupActor::Respawn()
 
 void ASPickupActor::NotifyActorBeginOverlap(AActor* OtherActor)
 {
-	Super::NotifyActorBeginOverlap(OtherActor);
+	ASCharacter* PlayerPawn = Cast<ASCharacter>(OtherActor);
 
-	if(Role == ROLE_Authority && PowerupInstance)
+	if(PlayerPawn)
 	{
-		PowerupInstance->ActivatePowerup();
-		PowerupInstance = nullptr;
+		Super::NotifyActorBeginOverlap(OtherActor);
 
-		GetWorldTimerManager().SetTimer(TimerHandle_RespawnTimer, this, &ASPickupActor::Respawn, CooldownDuration);
+		if(Role == ROLE_Authority && PowerupInstance)
+		{
+			PowerupInstance->ActivatePowerup(OtherActor);
+			PowerupInstance = nullptr;
+
+			GetWorldTimerManager().SetTimer(TimerHandle_RespawnTimer, this, &ASPickupActor::Respawn, CooldownDuration);
+		}
 	}
 }

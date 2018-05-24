@@ -54,6 +54,7 @@ protected:
 
 	UMaterialInstanceDynamic* MatInst;
 
+	UFUNCTION(BlueprintCallable, Category = "TrackerBot")
 	void SelfDestruct();
 
 	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")

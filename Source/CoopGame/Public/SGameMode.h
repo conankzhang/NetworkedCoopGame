@@ -39,6 +39,10 @@ protected:
 
 	void CheckWaveState();
 
+	void CheckAnyPlayerAlive();
+
+	void GameOver();
+
 public:
 	ASGameMode();
 	virtual void StartPlay() override;

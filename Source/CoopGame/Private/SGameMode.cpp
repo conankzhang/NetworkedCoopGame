@@ -26,7 +26,6 @@ void ASGameMode::StartWave()
 void ASGameMode::EndWave()
 {
 	GetWorldTimerManager().ClearTimer(TimerHandle_BotSpawner);
-	PrepareForNextWave();
 }
 
 void ASGameMode::PrepareForNextWave()

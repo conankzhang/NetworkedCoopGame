@@ -4,10 +4,13 @@
 #include "TimerManager.h"
 #include "SurfaceIterators.h"
 #include "SHealthComponent.h"
+#include "SGameState.h"
 
 ASGameMode::ASGameMode()
 {
 	TimeBetweenWaves = 2.0f;
+
+	GameStateClass = ASGameState::StaticClass();
 
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.TickInterval = 1.0f;
@@ -103,6 +106,15 @@ void ASGameMode::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 	CheckWaveState();
 	CheckAnyPlayerAlive();
+}
+
+void ASGameMode::SetWaveState(EWaveState NewState)
+{
+	ASGameState* GS = GetGameState<ASGameState>();
+	if(ensureAlways(GS))
+	{
+		GS->WaveState = NewState;
+	}
 }
 
 void ASGameMode::SpawnBotTimerElapsed()

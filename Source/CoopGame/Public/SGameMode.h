@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "SGameMode.generated.h"
 
+enum class EWaveState : uint8;
 /**
  * 
  */
@@ -24,6 +25,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "GameMode")
 	float TimeBetweenWaves;
+
+	void SetWaveState(EWaveState NewState);
 protected:
 	
 	UFUNCTION(BlueprintImplementableEvent, Category = "GameMode")

@@ -12,6 +12,13 @@
 #include "SCharacter.h"
 #include "Sound/SoundCue.h"
 
+static int32 DebugTrackerBot = 0;
+FAutoConsoleVariableRef CVARDebugTrackerBot(
+	TEXT("COOP.DebugTrackerBot"), 
+	DebugTrackerBot, 
+	TEXT("Draw Debug for TrackerBots"), 
+	ECVF_Cheat);
+
 // Sets default values
 ASTrackerBot::ASTrackerBot()
 {
@@ -119,7 +126,10 @@ void ASTrackerBot::SelfDestruct()
 
 		UGameplayStatics::ApplyRadialDamage(this, ExplosionDamage + (static_cast<float>(PowerLevel) * DamageBoost), GetActorLocation(), ExplosionRadius, nullptr, IgnoredActors, this, GetInstigatorController(), true);
 
-		DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 12, FColor::Red, false, 2.0f, 0, 1.0f);
+		if(DebugTrackerBot > 0)
+		{
+			DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 12, FColor::Red, false, 2.0f, 0, 1.0f);
+		}
 
 		SetLifeSpan(2.0f);
 	}
@@ -132,7 +142,10 @@ void ASTrackerBot::BuffCheck()
 	TArray<AActor*> OutActors;
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
 
-	DrawDebugSphere(GetWorld(), GetActorLocation(), BuffCheckRadius, 20, FColor::Blue, false, 1.0f, 0, 1.0f);
+	if(DebugTrackerBot > 0)
+	{
+		DrawDebugSphere(GetWorld(), GetActorLocation(), BuffCheckRadius, 20, FColor::Blue, false, 1.0f, 0, 1.0f);
+	}
 
 	UKismetSystemLibrary::SphereOverlapActors(GetWorld(), GetActorLocation(), BuffCheckRadius, ObjectTypes, GetClass(), IgnoreActors, OutActors);
 
@@ -169,7 +182,10 @@ void ASTrackerBot::Tick(float DeltaTime)
 		{
 			NextPathPoint = GetNextPathPoint();
 
-			DrawDebugString(GetWorld(), GetActorLocation(), "Target Reached");
+			if(DebugTrackerBot > 0)
+			{
+				DrawDebugString(GetWorld(), GetActorLocation(), "Target Reached");
+			}
 		}
 		else
 		{
@@ -178,10 +194,16 @@ void ASTrackerBot::Tick(float DeltaTime)
 			ForceDirection *= MovementForce;
 			MeshComp->AddForce(ForceDirection, NAME_None, bUseVelocityChange);
 
-			DrawDebugDirectionalArrow(GetWorld(), GetActorLocation(), GetActorLocation() + ForceDirection, 32, FColor::Yellow, false, 0.0f, 0, 1.0f);
+			if(DebugTrackerBot > 0)
+			{
+				DrawDebugDirectionalArrow(GetWorld(), GetActorLocation(), GetActorLocation() + ForceDirection, 32, FColor::Yellow, false, 0.0f, 0, 1.0f);
+			}
 		}
 
-		DrawDebugSphere(GetWorld(), NextPathPoint, 20, 12, FColor::Yellow, false, 0.0f, 1.0f);
+		if(DebugTrackerBot > 0)
+		{
+			DrawDebugSphere(GetWorld(), NextPathPoint, 20, 12, FColor::Yellow, false, 0.0f, 1.0f);
+		}
 	}
 }
 

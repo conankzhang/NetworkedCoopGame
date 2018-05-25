@@ -48,6 +48,8 @@ protected:
 
 	void GameOver();
 
+	void RestartDeadPlayers();
+
 public:
 	ASGameMode();
 	virtual void StartPlay() override;

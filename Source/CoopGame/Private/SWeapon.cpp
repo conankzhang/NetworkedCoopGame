@@ -31,7 +31,7 @@ ASWeapon::ASWeapon()
 	BaseDamage = 20.0f;
 	RateOfFire = 600.0f;
 	LastFireTime = -TimeBetweenShots;
-	Spread = 0.15f;
+	Spread = 2.0f;
 	Recoil = 0.15f;
 
 	SetReplicates(true);
@@ -64,11 +64,10 @@ void ASWeapon::Fire()
 
 		FVector ShotDirection = EyeRotation.Vector();
 
-		float YSpread = FMath::FRandRange(-Spread, Spread);
-		float ZSpread = FMath::FRandRange(-Spread, Spread);
+		float HalfRad = FMath::DegreesToRadians(Spread);
+		ShotDirection = FMath::VRandCone(ShotDirection, HalfRad, HalfRad);
 
-		FVector SpreadDirection = FVector(ShotDirection.X, ShotDirection.Y + YSpread, ShotDirection.Z + ZSpread);
-		FVector TraceEnd = EyeLocation + (SpreadDirection* 10000);
+		FVector TraceEnd = EyeLocation + (ShotDirection* 10000);
 
 		FCollisionQueryParams QueryParams;
 

@@ -11,6 +11,19 @@ class UDamageType;
 class UParticleSystem;
 class UCameraShake;
 
+USTRUCT()
+struct FHitScanTrace
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY()
+	TEnumAsByte<EPhysicalSurface> SurfaceType;
+
+	UPROPERTY()
+	FVector_NetQuantize TraceTo;
+};
 UCLASS()
 class COOPGAME_API ASWeapon : public AActor
 {
@@ -50,6 +63,8 @@ protected:
 
 	void PlayFireEffects(FVector TracerEndPoint);
 
+	void PlayImpactEffects(EPhysicalSurface SurfaceType, FVector ImpactPoint);
+
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	TSubclassOf<UCameraShake> FireCamShake;
 
@@ -60,14 +75,17 @@ protected:
 
 	virtual void Fire();
 
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerFire();
+
 	float LastFireTime;
 
 	//Bullets per minute
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	float RateOfFire;
 
-	//Bullets per minute
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	/* Bullet spread in degrees */
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon", meta = (ClampMin = 0.0f))
 	float Spread;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
@@ -75,6 +93,12 @@ protected:
 
 	// Derived from rate of fire
 	float TimeBetweenShots;
+
+	UPROPERTY(ReplicatedUsing=OnRep_HitScanTrace)
+	FHitScanTrace HitScanTrace;
+
+	UFUNCTION()
+	void OnRep_HitScanTrace();
 public:	
 	void StartFire();
 	void StopFire();
